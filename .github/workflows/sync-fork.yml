@@ -1,0 +1,87 @@
+name: Sync Fork
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+on:
+  schedule:
+    - cron: '0 * * * *' # 每小时执行一次
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.fork }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream ${{ vars.UPSTREAM_REPO }}
+          git fetch upstream master
+
+      - name: Get upstream new commits
+        id: get_commits
+        run: |
+          # 找到当前分支与上游分支的共同祖先提交
+          MERGE_BASE=$(git merge-base HEAD upstream/master)
+          
+          # 获取从共同祖先到上游最新提交的更新内容
+          COMMIT_LOG=$(git log --pretty=format:"%h - %s" ${MERGE_BASE}..upstream/master)
+          echo "commit_log<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # 检查是否有更新内容
+          if [ -n "$COMMIT_LOG" ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Rebase with upstream
+        id: rebase
+        run: |
+          git rebase upstream/master
+          git push -f origin master
+        continue-on-error: true
+
+      - name: Send WeChat Work success notification
+        if: steps.rebase.outcome == 'success' && steps.get_commits.outputs.has_updates == 'true'
+        run: |
+          COMMIT_LOG="${{ steps.get_commits.outputs.commit_log }}"
+          MESSAGE="Fork 同步成功\n仓库：${{ github.repository }}\n分支：master\n\n上游更新内容：\n$COMMIT_LOG"
+          
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{
+            \"msgtype\": \"text\",
+            \"text\": {
+              \"content\": \"$MESSAGE\"
+            }
+          }" \
+          ${{ secrets.WECHAT_WORK_WEBHOOK_URL }}
+
+      - name: Send WeChat Work failure notification
+        if: steps.rebase.outcome == 'failure'
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "msgtype": "text",
+            "text": {
+              "content": "Fork 同步失败\n仓库：${{ github.repository }}\n分支：master\n请手动处理可能的冲突"
+            }
+          }' \
+          ${{ secrets.WECHAT_WORK_WEBHOOK_URL }}

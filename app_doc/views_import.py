@@ -161,23 +161,25 @@ class ImportLocalDoc(APIView):
             sort_data = json.loads(sort_data)
         except Exception:
             return JsonResponse({'code': 5, 'data': _('文档参数错误')})
-        # 文档排序
-        n = 10
-        # 第一级文档
-        for data in sort_data:
-            Doc.objects.filter(id=data['id']).update(sort=n, status=1)
-            n += 10
-            # 存在第二级文档
-            if 'children' in data.keys():
-                n1 = 10
-                for c1 in data['children']:
-                    Doc.objects.filter(id=c1['id']).update(sort=n1, parent_doc=data['id'], status=1)
-                    n1 += 10
-                    # 存在第三级文档
-                    if 'children' in c1.keys():
-                        n2 = 10
-                        for c2 in c1['children']:
-                            Doc.objects.filter(id=c2['id']).update(sort=n2, parent_doc=c1['id'], status=1)
+        
+        # 递归处理文档排序和发布
+        def update_doc_sort_and_status(docs, parent_id=0, start_sort=10):
+            sort_num = start_sort
+            for doc in docs:
+                # 更新文档的排序、父文档和状态
+                Doc.objects.filter(id=doc['id']).update(
+                    sort=sort_num,
+                    parent_doc=parent_id,
+                    status=1
+                )
+                sort_num += 10
+                
+                # 如果存在子文档，递归处理
+                if 'children' in doc and doc['children']:
+                    update_doc_sort_and_status(doc['children'], parent_id=doc['id'], start_sort=10)
+        
+        # 执行排序和发布
+        update_doc_sort_and_status(sort_data, parent_id=0)
 
         return Response({'code':0,'data':'ok'})
 
@@ -210,23 +212,25 @@ def project_doc_sort(request):
         intro = desc,
         role = role
     )
-    # 文档排序
-    n = 10
-    # 第一级文档
-    for data in sort_data:
-        Doc.objects.filter(id=data['id']).update(sort = n,status=doc_status)
-        n += 10
-        # 存在第二级文档
-        if 'children' in data.keys():
-            n1 = 10
-            for c1 in data['children']:
-                Doc.objects.filter(id=c1['id']).update(sort = n1,parent_doc=data['id'],status=doc_status)
-                n1 += 10
-                # 存在第三级文档
-                if 'children' in c1.keys():
-                    n2 = 10
-                    for c2 in c1['children']:
-                        Doc.objects.filter(id=c2['id']).update(sort=n2,parent_doc=c1['id'],status=doc_status)
+    
+    # 递归处理文档排序和状态更新
+    def update_doc_sort_and_status(docs, parent_id=0, start_sort=10):
+        sort_num = start_sort
+        for doc in docs:
+            # 更新文档的排序、父文档和状态
+            Doc.objects.filter(id=doc['id']).update(
+                sort=sort_num,
+                parent_doc=parent_id,
+                status=doc_status
+            )
+            sort_num += 10
+            
+            # 如果存在子文档，递归处理
+            if 'children' in doc and doc['children']:
+                update_doc_sort_and_status(doc['children'], parent_id=doc['id'], start_sort=10)
+    
+    # 执行排序和状态更新
+    update_doc_sort_and_status(sort_data, parent_id=0)
 
     return JsonResponse({'status':True,'data':'ok'})
 
