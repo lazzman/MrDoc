@@ -229,7 +229,7 @@
                                 //console.log(obj.data); //得到当前点击的节点数据
                                 // console.log(obj.state); //得到当前节点的展开状态：open、close、normal
                                 // console.log(obj.elem); //得到当前节点元素
-                                if(obj.data.level != 3){
+                                if(obj.data.level < {{ doc_tree_config.max_depth }}){
                                     $('#parent-doc').val(obj.data.id);// 设置上级文档
                                     $("div.layui-tree-set").each(function(i){
                                         var $me = $(this)
@@ -242,7 +242,7 @@
                                         }
                                     });
                                 }else{
-                                    layer.msg("第三级文档不能作为上级文档")
+                                    layer.msg("已达到最大层级限制（{{ doc_tree_config.max_depth }}层），不能在此文档下创建子文档")
                                 }
                                 
                             }

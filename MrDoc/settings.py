@@ -345,3 +345,12 @@ if extend_root_txt == []:
     EXTEND_ROOT_TXT = extend_root_txt
 else:
     EXTEND_ROOT_TXT = extend_root_txt.split(',')
+
+# 文档树层级配置
+DOC_TREE_CONFIG = {
+    'max_depth': 10,              # 硬性限制（技术上限）
+    'recommended_depth': 6,       # 推荐最大层级
+    'default_expand_depth': 3,    # 默认展开层级
+    'warn_on_deep_level': True,   # 超过推荐层级时显示警告
+    'enable_loop_detection': True,# 启用循环引用检测
+}
