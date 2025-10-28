@@ -65,59 +65,34 @@ def import_project(request):
                         import_file = ImportZipProject()
                         project = import_file.read_zip(temp_file_path,request.user) # 返回文集id或None
                         if project:
+                            from app_doc.utils import get_doc_tree_recursive
+                            
                             pro = Project.objects.get(id=project)
                             docs = Doc.objects.filter(top_doc=project).values_list('id','name')
-                            # 查询存在上级文档的文档
-                            parent_id_list = Doc.objects.filter(top_doc=project).exclude(
-                                parent_doc=0).values_list('parent_doc', flat=True)
-                            # 获取存在上级文档的上级文档ID
-                            doc_list = []
-                            # 获取一级文档
-                            top_docs = Doc.objects.filter(
-                                top_doc=project,
-                                parent_doc=0).values('id','name').order_by('sort')
-                            for doc in top_docs:
-                                top_item = {
-                                    'id': doc['id'],
-                                    'field': doc['name'],
-                                    'title': doc['name'],
-                                    'spread': True,
-                                    'level': 1
-                                }
-                                # 如果一级文档存在下级文档，查询其二级文档
-                                if doc['id'] in parent_id_list:
-                                    sec_docs = Doc.objects.filter(
-                                        top_doc=project,
-                                        parent_doc=doc['id']).values('id','name').order_by('sort')
-                                    top_item['children'] = []
-                                    for doc in sec_docs:
-                                        sec_item = {
-                                            'id': doc['id'],
-                                            'field': doc['name'],
-                                            'title': doc['name'],
-                                            'level': 2
-                                        }
-                                        # 如果二级文档存在下级文档，查询第三级文档
-                                        if doc['id'] in parent_id_list:
-                                            thr_docs = Doc.objects.filter(
-                                                top_doc=project,
-                                                parent_doc=doc['id'],).values('id','name').order_by('sort')
-                                            sec_item['children'] = []
-                                            for doc in thr_docs:
-                                                item = {
-                                                    'id': doc['id'],
-                                                    'field': doc['name'],
-                                                    'title': doc['name'],
-                                                    'level': 3
-                                                }
-                                                sec_item['children'].append(item)
-                                            top_item['children'].append(sec_item)
-                                        else:
-                                            top_item['children'].append(sec_item)
-                                    doc_list.append(top_item)
-                                # 如果一级文档没有下级文档，直接保存
-                                else:
-                                    doc_list.append(top_item)
+                            
+                            # 使用递归函数获取文档树
+                            doc_tree = get_doc_tree_recursive(
+                                parent_id=0,
+                                top_doc_id=project
+                            )
+                            
+                            # 转换文档树格式以适配前端
+                            def convert_tree_format(nodes, level=1):
+                                result = []
+                                for node in nodes:
+                                    item = {
+                                        'id': node['id'],
+                                        'field': node['name'],
+                                        'title': node['name'],
+                                        'spread': True if level == 1 else False,
+                                        'level': level
+                                    }
+                                    if node.get('children'):
+                                        item['children'] = convert_tree_format(node['children'], level + 1)
+                                    result.append(item)
+                                return result
+                            
+                            doc_list = convert_tree_format(doc_tree)
 
                             return JsonResponse({
                                 'status':True,
@@ -256,23 +231,25 @@ class ImportLocalDoc(APIView):
             sort_data = json.loads(sort_data)
         except Exception:
             return JsonResponse({'code': 5, 'data': _('文档参数错误')})
-        # 文档排序
-        n = 10
-        # 第一级文档
-        for data in sort_data:
-            Doc.objects.filter(id=data['id']).update(sort=n, status=1)
-            n += 10
-            # 存在第二级文档
-            if 'children' in data.keys():
-                n1 = 10
-                for c1 in data['children']:
-                    Doc.objects.filter(id=c1['id']).update(sort=n1, parent_doc=data['id'], status=1)
-                    n1 += 10
-                    # 存在第三级文档
-                    if 'children' in c1.keys():
-                        n2 = 10
-                        for c2 in c1['children']:
-                            Doc.objects.filter(id=c2['id']).update(sort=n2, parent_doc=c1['id'], status=1)
+        
+        # 递归处理文档排序和发布
+        def update_doc_sort_and_status(docs, parent_id=0, start_sort=10):
+            sort_num = start_sort
+            for doc in docs:
+                # 更新文档的排序、父文档和状态
+                Doc.objects.filter(id=doc['id']).update(
+                    sort=sort_num,
+                    parent_doc=parent_id,
+                    status=1
+                )
+                sort_num += 10
+                
+                # 如果存在子文档，递归处理
+                if 'children' in doc and doc['children']:
+                    update_doc_sort_and_status(doc['children'], parent_id=doc['id'], start_sort=10)
+        
+        # 执行排序和发布
+        update_doc_sort_and_status(sort_data, parent_id=0)
 
         return Response({'code':0,'data':'ok'})
 
@@ -305,23 +282,25 @@ def project_doc_sort(request):
         intro = desc,
         role = role
     )
-    # 文档排序
-    n = 10
-    # 第一级文档
-    for data in sort_data:
-        Doc.objects.filter(id=data['id']).update(sort = n,status=doc_status)
-        n += 10
-        # 存在第二级文档
-        if 'children' in data.keys():
-            n1 = 10
-            for c1 in data['children']:
-                Doc.objects.filter(id=c1['id']).update(sort = n1,parent_doc=data['id'],status=doc_status)
-                n1 += 10
-                # 存在第三级文档
-                if 'children' in c1.keys():
-                    n2 = 10
-                    for c2 in c1['children']:
-                        Doc.objects.filter(id=c2['id']).update(sort=n2,parent_doc=c1['id'],status=doc_status)
+    
+    # 递归处理文档排序和状态更新
+    def update_doc_sort_and_status(docs, parent_id=0, start_sort=10):
+        sort_num = start_sort
+        for doc in docs:
+            # 更新文档的排序、父文档和状态
+            Doc.objects.filter(id=doc['id']).update(
+                sort=sort_num,
+                parent_doc=parent_id,
+                status=doc_status
+            )
+            sort_num += 10
+            
+            # 如果存在子文档，递归处理
+            if 'children' in doc and doc['children']:
+                update_doc_sort_and_status(doc['children'], parent_id=doc['id'], start_sort=10)
+    
+    # 执行排序和状态更新
+    update_doc_sort_and_status(sort_data, parent_id=0)
 
     return JsonResponse({'status':True,'data':'ok'})
 
