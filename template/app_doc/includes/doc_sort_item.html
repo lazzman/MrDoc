@@ -1,0 +1,18 @@
+{# 递归渲染可拖拽的文档树节点 #}
+<li data-sortable-id="{{ doc.id }}" class="list-group-item" data-level="{{ doc.level|default:1 }}">
+    <i class="iconfont mrdoc-icon-wendang"></i> {{ doc.title }}
+    
+    {# 如果有子文档，显示展开/收起按钮并递归渲染 #}
+    {% if doc.children %}
+        <i class="layui-icon layui-icon-down switch-toc"></i>
+        <ul class="list-group nested-sortable">
+            {% for child in doc.children %}
+                {# 递归调用自身 #}
+                {% include 'app_doc/includes/doc_sort_item.html' with doc=child %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        {# 叶子节点，添加空的子列表容器以支持拖拽 #}
+        <ul class="list-group nested-sortable"></ul>
+    {% endif %}
+</li>

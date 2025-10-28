@@ -1,0 +1,43 @@
+{# 递归渲染文档树节点 #}
+{% load doc_filter %}
+<li class="doc-item" data-doc-id="{{ doc.id }}" data-level="{{ doc.level|default:1 }}">
+    {% if doc.children %}
+        <div style="display:flex;justify-content:space-between;">
+            <a href="{% url 'doc_id' doc_id=doc.id %}" title="{{ doc.name }}" class="doc-link level-{{ doc.level|default:1 }}">
+                {% if doc.editor_mode == 4 %}
+                    <i class="layui-icon layui-icon-table"></i>
+                {% else %}
+                    <i class="iconfont mrdoc-icon-wendang"></i>
+                {% endif %}
+                {{ doc.name }}
+            </a>
+            {% if doc.open_children %}
+                <i class="layui-icon layui-icon-down switch-toc"></i>
+            {% else %}
+                <i class="layui-icon layui-icon-left switch-toc"></i>
+            {% endif %}
+        </div>
+        
+        {# 如果有子文档,递归渲染 #}
+        {% if doc.open_children %}
+            <ul class="sub-menu doc-children level-{{ doc.level|default:1|add:1 }}">
+        {% else %}
+            <ul class="sub-menu doc-children level-{{ doc.level|default:1|add:1 }} toc-close">
+        {% endif %}
+            {% for child in doc.children %}
+                {# 递归调用自身 - 关键：使用include标签 #}
+                {% include 'app_doc/includes/doc_tree_item.html' with doc=child %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        {# 叶子节点，没有子文档 #}
+        <a href="{% url 'doc_id' doc_id=doc.id %}" title="{{ doc.name }}" class="doc-link level-{{ doc.level|default:1 }}">
+            {% if doc.editor_mode == 4 %}
+                <i class="layui-icon layui-icon-table"></i>
+            {% else %}
+                <i class="iconfont mrdoc-icon-wendang"></i>
+            {% endif %}
+            {{ doc.name }}
+        </a>
+    {% endif %}
+</li>
