@@ -12,6 +12,44 @@ $.ajaxSetup({
 // 视频iframe域名白名单
 var iframe_whitelist = '{{ iframe_whitelist }}'.split(',')
 
+/**
+ * 递归展开所有父级菜单
+ * @param {jQuery} element - 当前文档链接元素
+ * @param {number} maxDepth - 最大递归深度（默认20层，防止无限递归）
+ */
+function expandParentMenus(element, maxDepth) {
+    if (typeof maxDepth === 'undefined') {
+        maxDepth = 20;
+    }
+    
+    if (maxDepth <= 0) {
+        console.warn('达到最大展开深度，停止递归');
+        return;
+    }
+    
+    // 查找父级 li.doc-item
+    var parentLi = element.closest('li.doc-item');
+    if (parentLi.length > 0) {
+        var parentUl = parentLi.parent('ul.sub-menu');
+        if (parentUl.length > 0 && parentUl.hasClass("toc-close")) {
+            // 展开父级菜单
+            parentUl.removeClass("toc-close");
+            
+            // 切换展开图标
+            var parentDiv = parentUl.prev("div");
+            if (parentDiv.length > 0) {
+                var icon = parentDiv.children("i.switch-toc");
+                if (icon.hasClass("layui-icon-left")) {
+                    icon.removeClass("layui-icon-left").addClass("layui-icon-down");
+                }
+            }
+            
+            // 递归展开更上层的父级
+            expandParentMenus(parentUl, maxDepth - 1);
+        }
+    }
+}
+
 //为当前页面的目录链接添加蓝色样式
 tagCurrentDoc = function(){
     $("nav li a").each(function (i) {
@@ -27,26 +65,10 @@ tagCurrentDoc = function(){
                 $me.parent().next("ul.sub-menu").toggleClass("toc-close");
                 $me.next("i").toggleClass("layui-icon-left layui-icon-down");
             }
-            // 展开当前文档的所有上级目录
-            if($me.parent("li").parent('ul.sub-menu').hasClass("toc-close")){
-                // console.log("展开二级文档目录")
-                $me.parent("li").parent('ul.sub-menu').toggleClass("toc-close");
-            }
-            if($me.parent("div").parent('li').parent('ul.sub-menu').hasClass("toc-close")){
-                // console.log("展开包含下级的二级文档目录")
-                $me.parent("div").parent('li').parent('ul.sub-menu').toggleClass("toc-close");
-            }
-            if($me.parent("li").parent('ul').parent('li').parent('ul.sub-menu').hasClass("toc-close")){
-                // console.log("展开三级目录")
-                $me.parent("li").parent('ul').parent('li').parent('ul.sub-menu').toggleClass("toc-close");
-            }
-            // 切换图标
-            $me.parents("ul.sub-menu").prevAll("div").each(function(i){
-                var $link = $(this);
-                if($link.children("i").hasClass("layui-icon-left")){
-                    $link.children("i").toggleClass("layui-icon-left layui-icon-down");
-                }
-            })
+            
+            // 递归展开当前文档的所有上级目录
+            expandParentMenus($me);
+            
             // 目录的当前文档滚动于目录顶端
             this.scrollIntoView({ behavior: 'auto', block: "start" });
         } else {
