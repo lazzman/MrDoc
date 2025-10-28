@@ -246,3 +246,83 @@ def image_trim(old_image):
 
     new_image = old_image.copy(open=open_image)
     return new_image
+
+
+def get_doc_tree_recursive(parent_id, top_doc_id, current_depth=1, max_depth=None, visited=None):
+    """
+    递归获取文档树结构
+    
+    Args:
+        parent_id (int): 父文档ID，0表示顶级文档
+        top_doc_id (int): 所属项目ID
+        current_depth (int): 当前递归深度，从1开始
+        max_depth (int): 最大递归深度限制，None则使用配置值
+        visited (set): 已访问的文档ID集合，用于检测循环引用
+    
+    Returns:
+        list: 文档树列表，每个节点包含id、name、level、children等字段
+    
+    Raises:
+        ValueError: 当检测到循环引用时抛出
+    """
+    from django.conf import settings
+    from app_doc.models import Doc
+    
+    # 初始化visited集合
+    if visited is None:
+        visited = set()
+    
+    # 获取最大深度配置
+    if max_depth is None:
+        max_depth = settings.DOC_TREE_CONFIG.get('max_depth', 10)
+    
+    # 检查递归深度限制
+    if current_depth > max_depth:
+        return []
+    
+    # 查询当前层级的文档
+    try:
+        docs = Doc.objects.filter(
+            top_doc=top_doc_id,
+            parent_doc=parent_id,
+            status=1
+        ).order_by('sort')
+    except Exception as e:
+        print(f"查询文档失败: {e}")
+        return []
+    
+    result = []
+    for doc in docs:
+        # 循环引用检测
+        if doc.id in visited:
+            if settings.DOC_TREE_CONFIG.get('enable_loop_detection', True):
+                print(f"警告：检测到循环引用，文档ID: {doc.id}")
+                continue
+        
+        # 标记为已访问
+        visited.add(doc.id)
+        
+        # 递归获取子文档
+        children = get_doc_tree_recursive(
+            parent_id=doc.id,
+            top_doc_id=top_doc_id,
+            current_depth=current_depth + 1,
+            max_depth=max_depth,
+            visited=visited
+        )
+        
+        # 构建节点数据
+        node = {
+            'id': doc.id,
+            'name': doc.name,
+            'level': current_depth,
+            'pre_content': doc.pre_content,
+            'sort': doc.sort,
+            'open_children': doc.open_children,
+            'editor_mode': doc.editor_mode,
+            'children': children
+        }
+        
+        result.append(node)
+    
+    return result
