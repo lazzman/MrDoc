@@ -140,6 +140,8 @@ class ReportMD():
                     media_filename = media.replace('//','/').split("(")[-1].split(")")[0] # 媒体文件的文件名
                 except:
                     continue
+                # 安全检查前先解码，防止 %2e%2e 等编码绕过
+                media_filename = unquote(media_filename)
                 # 对本地静态文件进行复制
                 if media_filename.startswith("/media"):
                     # 安全拼接路径
@@ -160,7 +162,7 @@ class ReportMD():
                     md_content = md_content.replace(media_filename, "." + media_filename)
                     # 复制静态文件到指定文件夹
                     try:
-                        new_file_path = pathlib.Path(settings.BASE_DIR,unquote(media_filename)[1:])
+                        new_file_path = pathlib.Path(settings.BASE_DIR, media_filename[1:])
                         shutil.copy(new_file_path, self.media_path + sub_folder)
                     except FileNotFoundError:
                         pass
@@ -170,6 +172,8 @@ class ReportMD():
                     media_filename = re.findall('src="([^"]+)"', media)[0]
                 except:
                     continue
+                # 安全检查前先解码，防止 %2e%2e 等编码绕过
+                media_filename = unquote(media_filename)
                 # 对本地静态文件进行复制
                 if media_filename.startswith("/media"):
                     # 安全拼接路径
@@ -190,7 +194,7 @@ class ReportMD():
                     md_content = md_content.replace(media_filename, "." + media_filename)
                     # 复制静态文件到指定文件夹
                     try:
-                        new_file_path = pathlib.Path(settings.BASE_DIR,unquote(media_filename)[1:])
+                        new_file_path = pathlib.Path(settings.BASE_DIR, media_filename[1:])
                         shutil.copy(new_file_path, self.media_path + sub_folder)
                     except FileNotFoundError:
                         pass
