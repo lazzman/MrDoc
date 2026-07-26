@@ -145,6 +145,53 @@ def check_user_project_writer_role(user_id,project_id):
         logger.error(e)
         return False
 
+# 验证用户是否有文集的访问权限
+def check_user_project_view_role(user_id,project_id):
+    if user_id == '' or project_id == '':
+        return False
+    try:
+        project = Project.objects.get(id=project_id)
+    except:
+        return False
+
+    if project.role in [0,4]: # 公开、登录可见
+        return True
+
+    try:
+        user = User.objects.get(id=user_id)
+    except:
+        return False
+
+    str_user_id = str(user.id)
+    if project.create_user == user: # 文集作者有权限
+        return True
+
+    # 协作用户
+    colla_user = ProjectCollaborator.objects.filter(project=project, user=user).count()
+    # 协作用户组
+    colla_groups = ProjectCollaboratorUserGroup.objects.filter(project=project)
+    for colla_group in colla_groups:  # 判断用户存在于文集协作用户组中
+        if str_user_id in colla_group.group.group_ids.split(","):
+            colla_user = colla_groups.count()
+            break
+
+    if colla_user > 0: # 协作用户有权限
+        return True
+
+    if project.role == 2: # 指定用户可见文集
+        try:
+            user_list = project.role_value.split(',')  # 文集允许的用户和用户组id列表
+        except:
+            user_list = []
+        if str_user_id in user_list:
+            return True
+
+    # 访问码可见
+    elif project.role == 3:
+        return False
+
+    return False
+
 
 # 验证URL的有效性，以及排除本地URL
 def validate_url(url):
