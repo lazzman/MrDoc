@@ -1242,6 +1242,9 @@ def modify_doc(request,doc_id):
 
             if doc_id != '' and project_id != '' and doc_name != '' and project_id != '-1':
                 doc = Doc.objects.get(id=doc_id)
+                # 校验传入的 project_id 是否与文档实际所属文集一致，防止越权
+                if str(doc.top_doc) != project_id:
+                    return JsonResponse({'status': False, 'data': _('参数错误')})
                 if doc.editor_mode == 3:
                     doc_content = sanitize_html(doc_content)
                 project = Project.objects.get(id=project_id)
