@@ -1765,7 +1765,7 @@ def admin_center_menu(request):
             "title": _("升级专业版"),
             "type": 1,
             "icon": "layui-icon layui-icon-senior",
-            "href": 'https://doc.mrdoc.pro/doc/3441/',
+            "href": 'https://mrdoc.pro/doc/3441/',
             "openType": "_blank",
         },
         {
@@ -1781,7 +1781,7 @@ def admin_center_menu(request):
                     "icon": "layui-icon layui-icon-face-cry",
                     "type": 1,
                     "openType": "_blank",
-                    "href": "https://doc.mrdoc.pro/doc/4032/"
+                    "href": "https://mrdoc.pro/doc/4032/"
                 },
                 {
                     "id": 703,
@@ -1789,7 +1789,7 @@ def admin_center_menu(request):
                     "icon": "layui-icon layui-icon-face-cry",
                     "type": 1,
                     "openType": "_blank",
-                    "href": "https://doc.mrdoc.pro/d/mrdoc-desktop-releases/"
+                    "href": "https://mrdoc.pro/d/mrdoc-desktop-releases/"
                 },
                 {
                     "id": 704,
@@ -1797,7 +1797,7 @@ def admin_center_menu(request):
                     "icon": "layui-icon layui-icon-face-cry",
                     "type": 1,
                     "openType": "_blank",
-                    "href": "https://doc.mrdoc.pro/d/mobile-app-releases/"
+                    "href": "https://mrdoc.pro/d/mobile-app-releases/"
                 },
                 {
                     "id": 705,
@@ -1805,7 +1805,7 @@ def admin_center_menu(request):
                     "icon": "layui-icon layui-icon-face-cry",
                     "type": 1,
                     "openType": "_blank",
-                    "href": "https://doc.mrdoc.pro/doc/45721/"
+                    "href": "https://mrdoc.pro/doc/45721/"
                 },
             ]
         },
@@ -1821,21 +1821,21 @@ def admin_center_menu(request):
                 "icon": "layui-icon layui-icon-face-smile",
                 "type": 1,
                 "openType": "_blank",
-                "href": "https://doc.mrdoc.pro/project/7/"
+                "href": "https://mrdoc.pro/project/7/"
             }, {
                 "id": 702,
                 "title": _("使用手册"),
                 "icon": "layui-icon layui-icon-face-smile",
                 "type": 1,
                 "openType": "_blank",
-                "href": "https://doc.mrdoc.pro/project/54/"
+                "href": "https://mrdoc.pro/project/54/"
             },{
                 "id": 'doc-example',
                 "title": _("文档示例"),
                 "icon": "layui-icon layui-icon-face-smile",
                 "type": 1,
                 "openType": "_blank",
-                "href": "https://doc.mrdoc.pro/p/example/"
+                "href": "https://mrdoc.pro/p/example/"
             }
             ]
         }

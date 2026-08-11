@@ -42,13 +42,13 @@ Current Platform：
 - 💻Browser Extensions:Supported Chromium Browser,Firefox Browser [Download](https://gitee.com/zmister/mrdoc-webclipper)/[Chrome](https://chromewebstore.google.com/detail/mrdoc-%E9%80%9F%E8%AE%B0/aenkcglddghpaemlhefmhkdnhfceflcj)/[Edge](https://microsoftedge.microsoft.com/addons/detail/dihimgafbjljdfanobikhnolpmjjhpic)/[Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/mrdoc-webclipper/)
 - 🗔Desktop: Supported Windows,macOS,Linux [Download](https://gitee.com/zmister/mrdoc-desktop-release/releases/)
 - 📱Mobile APP:supportd Android [Download](https://gitee.com/zmister/mrdoc-app-release)
-- Obsidian Plugin：[Instructions](https://doc.mrdoc.pro/doc/45650/)
+- Obsidian Plugin：[Instructions](https://mrdoc.pro/doc/45650/)
 
 ## Example Site
 
 Open Source Edition -  [http://demo.mrdoc.pro](http://demo.mrdoc.pro)
 
-Professional Edition - [https://docker.mrdoc.pro](https://doc.mrdoc.pro)
+Professional Edition - [https://docker.mrdoc.pro](https://mrdoc.pro)
 
 username:test1  password:123456
 
@@ -154,7 +154,7 @@ Submit questions on the following pages:
 WeChat Subscription : **觅思文档**
 
 <p align="center">
-<img src="https://doc.mrdoc.pro/media/202505/1354bec77bdb4339a74a79397ca79f2d4926.png" width="50%">
+<img src="https://mrdoc.pro/media/202505/1354bec77bdb4339a74a79397ca79f2d4926.png" width="50%">
 </p>
 
 ## Dependent

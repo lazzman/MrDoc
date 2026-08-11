@@ -239,14 +239,14 @@ def user_center_menu(request):
                 "icon": "layui-icon layui-icon-face-smile",
                 "type": 1,
                 "openType": "_blank",
-                "href": "https://doc.mrdoc.pro/project/54/"
+                "href": "https://mrdoc.pro/project/54/"
             },{
                 "id": 'doc-example',
                 "title": _("文档示例"),
                 "icon": "layui-icon layui-icon-face-smile",
                 "type": 1,
                 "openType": "_blank",
-                "href": "https://doc.mrdoc.pro/p/example/"
+                "href": "https://mrdoc.pro/p/example/"
             }]
         }
     ]

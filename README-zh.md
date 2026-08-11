@@ -22,9 +22,9 @@
 <a href="https://mrdoc.io">English</a> | 
 <a href="https://mrdoc.pro">官网</a> | 
 <a href="http://mrdoc.zmister.com/">演示站点</a> |
-<a href="https://doc.mrdoc.pro/p/deploy/">安装手册</a> | 
-<a href="https://doc.mrdoc.pro/p/user-guide/">使用手册</a> |
-<a href="https://doc.mrdoc.pro/p/example/">文档效果</a>
+<a href="https://mrdoc.pro/p/deploy/">安装手册</a> | 
+<a href="https://mrdoc.pro/p/user-guide/">使用手册</a> |
+<a href="https://mrdoc.pro/p/example/">文档效果</a>
 </p>
 
 <p align="center">源码：<a href="https://gitee.com/zmister/MrDoc">Gitee</a> | 
@@ -42,19 +42,19 @@ MrDoc 适合作为个人和中小型团队的私有云文档、云笔记和知�
 
 MrDoc 全系产品目前涵盖以下终端：
 
-- 🌐Web端：开源版、专业版，[版本对比](https://doc.mrdoc.pro/doc/3441/)
+- 🌐Web端：开源版、专业版，[版本对比](https://mrdoc.pro/doc/3441/)
 - 💻浏览器扩展：主要用于网页剪藏和速记，支持 Chromium 系列浏览器、Firefox 浏览器，[下载地址](https://gitee.com/zmister/mrdoc-webclipper)/[Chrome应用商店](https://chromewebstore.google.com/detail/mrdoc-%E9%80%9F%E8%AE%B0/aenkcglddghpaemlhefmhkdnhfceflcj)/[Edge应用商店](https://microsoftedge.microsoft.com/addons/detail/dihimgafbjljdfanobikhnolpmjjhpic)/[Firefox扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/mrdoc-webclipper/)
-- 🗔桌面客户端：主要用于文档编辑和文档导入，支持 Windows、macOS、Linux，[下载地址](https://doc.mrdoc.pro/d/mrdoc-desktop-releases/)
-- 📱移动客户端：主要用于个人知识库查看和文档编辑，支持 Android，[下载地址](https://doc.mrdoc.pro/d/mobile-app-releases/)
-- Obsidian 同步插件：[使用教程](https://doc.mrdoc.pro/doc/45650/)
+- 🗔桌面客户端：主要用于文档编辑和文档导入，支持 Windows、macOS、Linux，[下载地址](https://mrdoc.pro/d/mrdoc-desktop-releases/)
+- 📱移动客户端：主要用于个人知识库查看和文档编辑，支持 Android，[下载地址](https://mrdoc.pro/d/mobile-app-releases/)
+- Obsidian 同步插件：[使用教程](https://mrdoc.pro/doc/45650/)
 
 ## 演示站点
 
 开源版 - [http://demo.mrdoc.pro](http://demo.mrdoc.pro)
 
-专业版 - [https://doc.mrdoc.pro](https://doc.mrdoc.pro)
+专业版 - [https://mrdoc.pro](https://mrdoc.pro)
 
-开源版与专业版对比 - [https://doc.mrdoc.pro/doc/3441/](https://doc.mrdoc.pro/doc/3441/)
+开源版与专业版对比 - [https://mrdoc.pro/doc/3441/](https://mrdoc.pro/doc/3441/)
 
 用户名：test1  密码：123456
 
@@ -116,10 +116,9 @@ MrDoc 全系产品目前涵盖以下终端：
 	- 文档收藏；
 	
 - **其他特性**
-    - 搜索引擎收录支持；
-    - sitemap站点地图；
-    - 无限用户限制；
-    - 无限空间限制；
+    - SEO优化（搜索引擎收录支持、robots.txt配置、llms.txt配置、JSON-LD结构化网页信息）；
+    - 无用户数量限制；
+    - 无存储空间限制；
 
 完整更新记录详见：[CHANGES.md](./CHANGES.md)
 
@@ -136,19 +135,19 @@ git clone https://gitee.com/zmister/mrdoc-install.git && cd mrdoc-install && chm
 
 ### 更多部署方式
 
-详见部署文档：https://doc.mrdoc.pro/doc/1362/
+详见部署文档：https://mrdoc.pro/doc/1362/
 
 ## 部署工具
 
 - [Docker 官方镜像](https://hub.docker.com/r/zmister/mrdoc)
-- [Docker Compose 一键部署](https://doc.mrdoc.pro/doc/45758/)
+- [Docker Compose 一键部署](https://mrdoc.pro/doc/45758/)
 - [Docker镜像 By jonnyan404 ](https://registry.hub.docker.com/r/jonnyan404/mrdoc-nginx)
 - [~~Linux 一键部署脚本 By jonnyan404~~](https://gitee.com/jonnyan404/oh-my-mrdoc)
 - [Windows 部署面板 By 小肥羊](https://gitee.com/debj031634/win-django)
 - [VirtualBox/VmWare 虚拟机镜像 By 无名](https://gitee.com/nicktf/tinycore-mrdoc)
 
 ## 文档导入工具
-- [觅思文档桌面客户端](https://doc.mrdoc.pro/doc/4031/)
+- [觅思文档桌面客户端](https://mrdoc.pro/doc/4031/)
 - ~~[觅思文档导入工具箱](https://gitee.com/zmister/mrdoc-import-toolbox)~~
 
 ## 其他工具
@@ -158,7 +157,7 @@ git clone https://gitee.com/zmister/mrdoc-install.git && cd mrdoc-install && chm
 ## 交流
 
 <p align="center">
-<img src="https://doc.mrdoc.pro/media/202505/1354bec77bdb4339a74a79397ca79f2d4926.png" width="50%">
+<img src="https://mrdoc.pro/media/202505/1354bec77bdb4339a74a79397ca79f2d4926.png" width="50%">
 </p>
 
 ## 依赖
@@ -189,8 +188,8 @@ git clone https://gitee.com/zmister/mrdoc-install.git && cd mrdoc-install && chm
 
 ### 免责协议与用户合规使用声明
 
-《[MrDoc 免责声明与用户合规使用声明](https://doc.mrdoc.pro/doc/45932/)》。
+《[MrDoc 免责声明与用户合规使用声明](https://mrdoc.pro/doc/45932/)》。
 
 商业授权（专业版）请微信咨询：
 
-<img src="https://doc.mrdoc.pro/media/202212/wechatwork_qrcode_20221201165203490192.png" width="200px" />
+<img src="https://mrdoc.pro/media/202212/wechatwork_qrcode_20221201165203490192.png" width="200px" />
