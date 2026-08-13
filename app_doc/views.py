@@ -2151,7 +2151,7 @@ def get_pro_doc_tree(request):
     pro_id = request.POST.get('pro_id', None)
     is_page = request.POST.get('is_page', False)
     if pro_id:
-        if not check_user_project_writer_role(request.user,pro_id):
+        if not check_user_project_writer_role(request.user.id,pro_id):
             return JsonResponse({'status':False,'data':'您没有权限查看该文集的文档树数据'})
         # 查询存在上级文档的文档
         parent_id_list = Doc.objects.filter(top_doc=pro_id,status=1).exclude(parent_doc=0).values_list('parent_doc',flat=True)
