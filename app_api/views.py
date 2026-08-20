@@ -488,7 +488,42 @@ def get_doc_previous_next(request):
         logger.exception("获取文档上下篇文档异常")
         return JsonResponse({'status':False,'data':'系统异常'})
 
+# 获取图片列表
+def get_images(request):
+    token = request.GET.get('token', '')
+    page_num = request.GET.get('page', 1)
+    try:
+        # 验证Token
+        token = UserToken.objects.get(token=token)
+        if token.user.is_writer and token.user.writer_value[2] == '1':
+            imgs = Image.objects.filter(user=token.user)
+            paginator = Paginator(imgs, 10)
+            page = request.GET.get('page', 1)
+            try:
+                imgs_page = paginator.page(page)
+            except PageNotAnInteger:
+                imgs_page = paginator.page(1)
+            except EmptyPage:
+                return JsonResponse({'status': True, 'data': {'total_cnt':0}})
 
+            img_list = []
+            for img in imgs_page:
+                item = {
+                    'name':img.file_name,
+                    'path':img.file_path,
+                    'remark':img.remark,
+                    'create_time':img.create_time
+                }
+                img_list.append(item)
+
+            return JsonResponse({'status': True, 'data': {'imgs':img_list,'total_cnt':paginator.count,'total_page':paginator.num_pages}})
+        else:
+            return JsonResponse({'status':False,'data':_('用户无操作权限')})
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': False, 'data': _('token无效')})
+    except:
+        logger.exception(_("token获取图片列表异常"))
+        return JsonResponse({'status':False,'data':_('系统异常')})
 
 # 新建文集
 @require_http_methods(['GET','POST'])

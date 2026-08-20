@@ -15,6 +15,7 @@ urlpatterns = [
     path('get_self_docs/',views.get_self_docs,name="get_self_docs"), # 获取自己的文档列表
     path('get_doc/',views.get_doc,name="api_get_doc"), # 获取单篇文档
     path('get_doc_previous_next/', views.get_doc_previous_next, name="api_get_doc_previous_next"),  # 获取文档上下篇文档
+    path('get_imgs/',views.get_images), # 获取自己的图片列表
     path('create_project/',views.create_project,name="api_create_project"), # 新建文集
     path('create_doc/',views.create_doc,name="api_create_doc"), # 新建文档
     path('modify_doc/', views.modify_doc, name="api_modify_doc"),  # 修改文档
