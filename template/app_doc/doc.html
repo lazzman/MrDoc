@@ -429,6 +429,43 @@
     window.onafterprint = afterPrint;
 
     if(is_print === 'true'){
+        // 移除懒加载标记，让浏览器立即加载全部图片。
+        // 打印标签页不会滚动，首屏以下 loading="lazy" 的图片永远不会进入加载队列，
+        // 导致打印快照中这些图片为空白（新内核不再在打印时强制补加载）。
+        var disableLazyLoading = function() {
+            var deferred = document.querySelectorAll('img[loading="lazy"], iframe[loading="lazy"]');
+            for (var i = 0; i < deferred.length; i++) {
+                deferred[i].removeAttribute('loading');
+            }
+            return deferred.length;
+        };
+
+        // 统计正文中尚未加载完成的图片数量
+        var countPendingImages = function() {
+            var pending = 0;
+            var images = document.querySelectorAll('#content img');
+            for (var i = 0; i < images.length; i++) {
+                if (images[i].getAttribute('src') && !images[i].complete) {
+                    pending++;
+                }
+            }
+            return pending;
+        };
+
+        // 等待图片加载完成后再触发打印，超时则强制执行，避免打印对话框永不弹出
+        var printWhenImagesLoaded = function(timeout) {
+            var start = new Date().getTime();
+            var check = function() {
+                disableLazyLoading();
+                if (countPendingImages() === 0 || new Date().getTime() - start > timeout) {
+                    window.print();
+                    return;
+                }
+                setTimeout(check, 300);
+            };
+            check();
+        };
+
         setTimeout(function(){
             // console.log("打印文档")
             $("body").addClass('big-page');
@@ -441,7 +478,7 @@
             // $(".page-flip").css('display','none'); // 隐藏翻页
             // $("#ad-1").css('display','none'); // 隐藏广告
             // $("#ad-2").css('display','none'); // 隐藏广告
-            window.print();
+            printWhenImagesLoaded(20000);
         }, 2000);
     }
 </script>
